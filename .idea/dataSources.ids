@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="dataSourceStorage">
+  <data-source name="MySQL - chirper@localhost" uuid="0b0a8348-ace0-4f50-a632-cfc9109cdaaa">
+    <database-info product="MySQL" version="5.6.21" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.34 ( Revision: jess.balint@oracle.com-20141014163213-wqbwpf1ok2kvo1om )">
+      <extra-name-characters>#@</extra-name-characters>
+      <identifier-quote-string>`</identifier-quote-string>
+    </database-info>
+    <case-sensitivity plain-identifiers="mixed" quoted-identifiers="upper"/>
+    <schema name="" catalog="chirper"/>
+    <table name="comment" schema="" catalog="chirper" type="TABLE">
+      <column name="comment_id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
+      <column name="post_id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="user_id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="comment" sqlType="VARCHAR" precision="200" scale="0" nullable="false" jdbcType="12" def="Jyc="/>
+      <column name="image" sqlType="VARCHAR" precision="150" scale="0" nullable="true" jdbcType="12"/>
+      <column name="timestamp" sqlType="MEDIUMTEXT" precision="16777215" scale="0" nullable="true" jdbcType="-1"/>
+      <column name="created_date" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA="/>
+      <column name="deleted" sqlType="TINYINT" precision="3" scale="0" nullable="false" jdbcType="-6" def="MA=="/>
+      <primary-key name="PRIMARY" columns="comment_id"/>
+    </table>
+    <table name="post" schema="" catalog="chirper" type="TABLE">
+      <column name="post_id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
+      <column name="user_id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="song" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12" def="Jyc="/>
+      <column name="artist" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12" def="Jyc="/>
+      <column name="comment" sqlType="VARCHAR" precision="140" scale="0" nullable="false" jdbcType="12" def="Jyc="/>
+      <column name="image" sqlType="VARCHAR" precision="150" scale="0" nullable="true" jdbcType="12"/>
+      <column name="timestamp" sqlType="MEDIUMTEXT" precision="16777215" scale="0" nullable="true" jdbcType="-1"/>
+      <column name="created_date" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA="/>
+      <column name="deleted" sqlType="TINYINT" precision="3" scale="0" nullable="false" jdbcType="-6" def="MA=="/>
+      <primary-key name="PRIMARY" columns="post_id"/>
+    </table>
+    <table name="user" schema="" catalog="chirper" type="TABLE">
+      <column name="user_id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
+      <column name="first_name" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12" def="Jyc="/>
+      <column name="last_name" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12" def="Jyc="/>
+      <column name="email" sqlType="VARCHAR" precision="80" scale="0" nullable="false" jdbcType="12" def="Jyc="/>
+      <column name="gender" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MQ=="/>
+      <column name="username" sqlType="VARCHAR" precision="80" scale="0" nullable="false" jdbcType="12" def="Jyc="/>
+      <column name="password" sqlType="VARCHAR" precision="50" scale="0" nullable="false" jdbcType="12" def="Jyc="/>
+      <column name="country" sqlType="VARCHAR" precision="100" scale="0" nullable="true" jdbcType="12"/>
+      <column name="bio" sqlType="VARCHAR" precision="500" scale="0" nullable="true" jdbcType="12"/>
+      <column name="avatar" sqlType="VARCHAR" precision="200" scale="0" nullable="true" jdbcType="12"/>
+      <column name="created_date" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA="/>
+      <column name="deleted" sqlType="TINYINT" precision="3" scale="0" nullable="false" jdbcType="-6" def="MA=="/>
+      <primary-key name="PRIMARY" columns="user_id"/>
+    </table>
+  </data-source>
+</component>
