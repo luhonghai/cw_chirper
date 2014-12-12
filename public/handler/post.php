@@ -25,7 +25,7 @@ if ($type == 'save') {
     }
 } else if ($type == 'delete') {
     if (isset($_POST['data'])) {
-        $post = new Post();
+        $post = new Post(Utilities::get_post_data('data'));
         if ($post->delete()) {
             echo "Completed";
         } else {

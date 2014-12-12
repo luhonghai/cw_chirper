@@ -177,7 +177,22 @@ class User extends AbstractModel {
      */
     public function findOne($id)
     {
-        // TODO: Implement findOne() method.
+        $db = new Connector($GLOBALS['config']);
+        $conn = $db->open();
+        $user = null;
+        $sql = "select * from user where deleted=FALSE and user_id=".mysqli_escape_string($conn,$id);
+        try {
+            $result = mysqli_query($conn, $sql) or die("Could not get user data: ".mysqli_error($conn));
+            if (mysqli_num_rows($result) > 0) {
+                $row = mysqli_fetch_assoc($result);
+                $user  = User::User($row['user_id'], $row['first_name'], $row['last_name'],
+                    $row['email'],$row['gender'], $row['username'], $row['country'],
+                    $row['bio'],$row['avatar']);
+            }
+        } catch (\Exception $e) {
+        }
+        $db->close();
+        return $user;
     }
 
     /**

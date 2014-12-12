@@ -2,7 +2,7 @@
     <div class="header-container">
         <div class="navbar-header">
 
-            <a href="#" class="navbar-brand">Chirper</a>
+            <a href="/" class="navbar-brand">Chirper</a>
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse1">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -34,7 +34,7 @@
                     </ul>
                 </li>
                 {*<li><a href="#" id="btnToggle"><i class="glyphicon glyphicon-th-large"></i></a> View</li>*}
-                <li><a href="#loginModal" id="profileAction"><i class="glyphicon glyphicon-user"></i> Login</a></li>
+                <li><a id="profileAction"><i class="glyphicon glyphicon-user"></i> Login</a></li>
 
             </ul>
         </div>

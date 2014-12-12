@@ -1,3 +1,4 @@
+<a href="#0" class="cd-top">Top</a>
 <!-- script references -->
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>

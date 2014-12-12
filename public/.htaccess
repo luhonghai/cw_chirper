@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule ^handler/comment handler/comment.php
+    RewriteRule ^handler/login handler/login.php
+    RewriteRule ^handler/logout handler/logout.php
+    RewriteRule ^handler/post handler/post.php
+    RewriteRule ^handler/user handler/user.php
+    RewriteRule ^u index.php
+</IfModule>

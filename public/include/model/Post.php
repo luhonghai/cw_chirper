@@ -91,11 +91,12 @@ class Post extends AbstractModel {
                       u.bio, u.avatar,
                       p.`timestamp`, p.created_date
                   from post as p inner join user as u on p.user_id = u.user_id
-                  where p.deleted = FALSE  and u.deleted = FALSE order by p.created_date DESC
+                  where p.deleted = FALSE  and u.deleted = FALSE
                 ";
         if ($id) {
-            $sql .= " and u.user_id = '".mysqli_escape_string($conn, $id)."'";
+            $sql .= " and p.user_id = ".mysqli_escape_string($conn, $id);
         }
+        $sql .= ' order by p.created_date DESC';
         try {
             $rs = mysqli_query($conn, $sql) or die("Could not find all post ".mysqli_error($conn));
             if (mysqli_num_rows($rs) > 0) {
@@ -117,7 +118,7 @@ class Post extends AbstractModel {
     {
         $db = new Connector($GLOBALS['config']);
         $conn = $db->open();
-        $sql = "update post set deleted=TRUE where user_id=".$this->id." and deleted=FALSE";
+        $sql = "update post set deleted=TRUE where deleted=FALSE and post_id=".$this->id."";
         try {
             $result = mysqli_query($conn, $sql) or die("Could not delete post id ".$this->id." ".mysqli_error($conn));
             $db->close();

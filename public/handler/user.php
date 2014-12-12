@@ -32,4 +32,11 @@ if ($type == 'save') {
 } else if ($type == 'logout') {
     User::logout();
     echo 'Completed';
+} else if ($type == 'get') {
+    $user = new User();
+    if (isset($_POST['uid'])) {
+        echo json_encode($user->findOne(Utilities::get_post_data("uid")));
+    } else {
+        echo 'Missing parameter';
+    }
 }

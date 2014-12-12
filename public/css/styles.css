@@ -202,11 +202,26 @@ h3,h4,h5 {
 
 .comment-container {
     font-size: 0.9em;
+    margin-bottom: 10px;
+    padding: 0 15px;
+}
+
+.comment-container table {
+    width: 100%;
+}
+
+.comment-container table tr {
+    border-top: 1px solid rgb(210, 210, 210);
+}
+
+.comment-container table tr td {
+    padding-top: 5px;
 }
 
 .comment-container .post-avatar-container {
     vertical-align: top;
     padding-right: 5px;
+    width: 50px;
 }
 
 .post-form-item {
@@ -226,4 +241,62 @@ h3,h4,h5 {
 .post-stream {
     max-width: 600px;
     margin: 0 auto;
+}
+
+.well-stream {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+
+.cd-top {
+    display: inline-block;
+    height: 40px;
+    width: 40px;
+    position: fixed;
+    bottom: 40px;
+    right: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    /* image replacement properties */
+    overflow: hidden;
+    text-indent: 100%;
+    white-space: nowrap;
+    background: rgba(66, 139, 202, 0.80) url(../images/cd-top-arrow.svg) no-repeat center 50%;
+    visibility: hidden;
+    opacity: 0;
+    -webkit-transition: opacity .3s 0s, visibility 0s .3s;
+    -moz-transition: opacity .3s 0s, visibility 0s .3s;
+    transition: opacity .3s 0s, visibility 0s .3s;
+}
+.cd-top.cd-is-visible, .cd-top.cd-fade-out, .no-touch .cd-top:hover {
+    -webkit-transition: opacity .3s 0s, visibility 0s 0s;
+    -moz-transition: opacity .3s 0s, visibility 0s 0s;
+    transition: opacity .3s 0s, visibility 0s 0s;
+}
+.cd-top.cd-is-visible {
+    /* the button becomes visible */
+    visibility: visible;
+    opacity: 1;
+}
+.cd-top.cd-fade-out {
+    /* if the user keeps scrolling down, the button is out of focus and becomes less visible */
+    opacity: .5;
+}
+.no-touch .cd-top:hover {
+    background-color: #69a9ca;
+    opacity: 1;
+}
+@media only screen and (min-width: 768px) {
+    .cd-top {
+        right: 20px;
+        bottom: 20px;
+    }
+}
+@media only screen and (min-width: 1024px) {
+    .cd-top {
+        height: 50px;
+        width: 50px;
+        right: 30px;
+        bottom: 30px;
+    }
 }

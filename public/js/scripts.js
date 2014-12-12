@@ -2,9 +2,19 @@ function Post() {
     var self = this;
 
     this.template = function(post) {
+        post.username = post.user.username;
         post.author_fullname = post.user.first_name + ' ' + post.user.last_name;
         var template = Handlebars.compile($("#post-template").html());
         return template(post);
+    };
+
+    this.enableDeletePost = function() {
+        // Enable delete post for current user
+        if (window.app.user.isLoginned()) {
+            var currentUser = window.app.user.currentUser;
+            $('.delete-post').hide();
+            $('.delete-post[uid='+ currentUser.id +']').show();
+        }
     };
 
     this.addPost = function(data) {
@@ -18,6 +28,9 @@ function Post() {
         }
         $("#main .post-anchor").after(html.join(''));
         $(".posted-time").prettyDate();
+
+        self.enableDeletePost();
+
         // Load all comment
         if (data.length > 0) {
             var i;
@@ -72,8 +85,8 @@ function Post() {
 
 function Comment() {
     var self = this;
-
     this.template = function(comment) {
+        comment.username = comment.user.username;
         comment.user_fullname = comment.user.first_name + ' ' + comment.user.last_name;
         var template = Handlebars.compile($("#comment-template").html());
         return template(comment);
@@ -109,9 +122,44 @@ function Comment() {
 function User() {
     var self = this;
     this.currentUser = null;
+    this.selectedUID = null;
 
     this.isLoginned = function() {
         return (typeof self.currentUser != 'undefined' && self.currentUser != null && typeof self.currentUser.id != 'undefined');
+    };
+
+    this.showLoginModal = function() {
+        $(".login-message").html('');
+        $("#loginModal input[name=username]").val('');
+        $("#loginModal input[name=password]").val('');
+        $("#loginModal").modal('show');
+    };
+
+    this.getUser = function(uid,callback) {
+        $.ajax({
+            type: "POST",
+            url: "handler/user.php",
+            data: {
+                type: "get",
+                uid : uid
+            }
+        }).done(function( resp ) {
+            try {
+                var user = JSON.parse(resp);
+                $(".user-profile-fullname").html(user.first_name + ' ' + user.last_name);
+                if (typeof user.avatar != 'undefined' && user.avatar != null && user.avatar.length > 0) {
+                    $(".user-profile-avatar").attr('src', user.avatar);
+                } else {
+                    $(".user-profile-avatar").attr('src', 'images/no-avatar.png');
+                }
+                $(".user-profile-container").show();
+            } catch (e) {
+
+            }
+            if (callback && typeof(callback) === "function") {
+                callback(resp);
+            }
+        });
     };
 
     this.check = function(callback) {
@@ -139,9 +187,12 @@ function User() {
     };
 
     this.toggleLogin = function() {
+        window.app.post.enableDeletePost();
         var html = '';
         if (typeof self.currentUser != 'undefined' && self.currentUser != null) {
-            $('.stream-quick-post').show();
+            if (self.selectedUID == null || self.currentUser.id == self.selectedUID) {
+                $('.stream-quick-post').show();
+            }
             $('.stream-quick-sign-up').hide();
             if (typeof self.currentUser.avatar != 'undefined' && self.currentUser.avatar != null && self.currentUser.avatar.length > 0) {
                 html = '<img src="' + self.currentUser.avatar + '" class="img-circle user-avatar">';
@@ -202,7 +253,7 @@ function User() {
 }
 
 function Connector() {
-    this.save = function(data, target, callback) {
+    this.save = function(data, target, callback, notAlert) {
         $.ajax({
             type: "POST",
             url: "handler/" + target + ".php",
@@ -212,10 +263,12 @@ function Connector() {
             }
         }).done(function( resp ) {
             // Contain { mean return json object
-            if (resp.indexOf('{') != -1) {
-                swal("Saved successfully!", "", "success");
-            } else {
-                swal("Error!", resp, "warning");
+            if (!notAlert) {
+                if (resp.indexOf('{') != -1) {
+                    swal("Saved successfully!", "", "success");
+                } else {
+                    swal("Error!", resp, "warning");
+                }
             }
             if (callback && typeof(callback) === "function") {
                 callback(resp);
@@ -296,10 +349,37 @@ function App(options) {
         m.push('<strong>' + title + '</strong> ' + message);
         m.push('</div>');
         $(locator).html(m.join(''));
-    }
+    };
 
     this.prettyLinks = function() {
         $(".posted-time").prettyDate();
+    };
+
+    this.enableGoToTop = function () {
+        // browser window scroll (in pixels) after which the "back to top" link is shown
+        var offset = 300,
+        //browser window scroll (in pixels) after which the "back to top" link opacity is reduced
+            offset_opacity = 1200,
+        //duration of the top scrolling animation (in ms)
+            scroll_top_duration = 700,
+        //grab the "back to top" link
+            $back_to_top = $('.cd-top');
+
+        //hide or show the "back to top" link
+        $(window).scroll(function(){
+            ( $(this).scrollTop() > offset ) ? $back_to_top.addClass('cd-is-visible') : $back_to_top.removeClass('cd-is-visible cd-fade-out');
+            if( $(this).scrollTop() > offset_opacity ) {
+                $back_to_top.addClass('cd-fade-out');
+            }
+        });
+        //smooth scroll to top
+        $back_to_top.on('click', function(event){
+            event.preventDefault();
+            $('body,html').animate({
+                    scrollTop: 0
+                }, scroll_top_duration
+            );
+        });
     }
 
     /**
@@ -384,10 +464,7 @@ function App(options) {
             if (self.user.isLoginned()) {
                 self.showProfile(self.user.currentUser);
             } else {
-                $(".login-message").html('');
-                $("#loginModal input[name=username]").val('');
-                $("#loginModal input[name=password]").val('');
-                $("#loginModal").modal('show');
+                self.user.showLoginModal();
             }
         });
 
@@ -399,7 +476,8 @@ function App(options) {
                 $("#loginModal input[name=email]").val(),
                 $("#loginModal input[name=password]").val(),
                 function(resp) {
-
+                    $("#loginModal input[name=email]").val('');
+                    $("#loginModal input[name=password]").val('');
                 }
             )
             return false;
@@ -419,7 +497,13 @@ function App(options) {
         $('.stream-quick-post .post-submit').click(function() {
            self.post.enableForm(false);
             var connector = new Connector();
-            connector.save(self.post.getFormData(), "post", function(resp) {
+            var data = self.post.getFormData();
+            if (data.comment.length == 0 || data.comment.length > 160
+                    || data.song.length == 0 || data.artist.length == 0) {
+                self.post.enableForm(true);
+                return false;
+            }
+            connector.save(data, "post", function(resp) {
                 self.post.enableForm(true);
                 self.post.clearFormData();
                 var posts = [];
@@ -428,26 +512,87 @@ function App(options) {
             });
         });
 
+        $(document).keypress(function (e) {
+            var $target = $(e.target);
+            if (e.which == 13 && $target.hasClass('input-comment')) {
+                if (self.user.isLoginned()) {
+                    var pid = $target.attr('pid');
+                    var val = $target.val();
+                    // comment should not empty and length less than 160
+                    if (val.length == 0 || val.length > 160) return false;
+                    var connect = new Connector();
+                    connect.save({
+                        post_id: pid,
+                        user_id: self.user.currentUser.id,
+                        comment: val
+                    }, 'comment', function (resp) {
+                        $target.val("");
+                        var comments = [];
+                        var c = JSON.parse(resp);
+                        comments.push(c);
+                        self.comment.addComments(comments, c.post_id);
+                    }, true);
+                    return false;
+                } else {
+                    self.user.showLoginModal();
+                }
+            }
+        });
+
         $(document).click(function(e) {
            var $target = $(e.target);
             /**
              *  Handler post comment
              */
             if ($target.hasClass('button-comment')) {
-                var $input = $target.closest('.input-group').find('.input-comment');
-                var pid = $input.attr('pid');
-                var connect = new Connector();
-                connect.save({
-                    post_id: pid,
-                    user_id: self.user.currentUser.id,
-                    comment: $input.val()
-                }, 'comment', function(resp) {
-                    $input.val("");
-                    var comments = [];
-                    var c = JSON.parse(resp);
-                    comments.push(c);
-                    self.comment.addComments(comments, c.post_id);
-                });
+                if (self.user.isLoginned()) {
+                    var $input = $target.closest('.input-group').find('.input-comment');
+                    var pid = $input.attr('pid');
+                    var connect = new Connector();
+                    var val = $input.val();
+                    // comment should not empty and length less than 160
+                    if (val.length == 0 || val.length > 160) return false;
+                    connect.save({
+                        post_id: pid,
+                        user_id: self.user.currentUser.id,
+                        comment: val
+                    }, 'comment', function (resp) {
+                        $input.val("");
+                        var comments = [];
+                        var c = JSON.parse(resp);
+                        comments.push(c);
+                        self.comment.addComments(comments, c.post_id);
+                    }, true);
+                } else {
+                    self.user.showLoginModal();
+                }
+            } else if ($target.hasClass('delete-post')) {
+                swal({
+                        title: "Are you sure?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonClass: "btn-danger",
+                        confirmButtonText: "Yes, delete it!",
+                        cancelButtonText: "Cancel",
+                        closeOnConfirm: false,
+                        closeOnCancel: true
+                    },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            var pid = $target.attr("pid");
+                            var connect = new Connector();
+                            connect.delete({
+                                id : pid
+                            },'post', function(resp) {
+                                if (resp == 'Completed') {
+                                    swal("Deleted successfully!", "", "success");
+                                    $('.post-container[pid='+pid+']').remove();
+                                } else {
+                                    swal("Error!", resp, "warning");
+                                }
+                            });
+                        }
+                    });
             }
         });
     };
@@ -496,16 +641,21 @@ function App(options) {
      *  Application init
      */
     this.init = function() {
+        var uid = window.location.hash.length > 0 ? window.location.hash.substr(1) : '';
+        if (uid.length > 0) {
+            self.user.selectedUID = uid;
+        }
+        self.enableGoToTop();
         self.initToggle();
         self.initPrettyTime();
         self.initEvents();
-        self.post.load();
         self.user.check(function() {
-            //if (self.user.isLoginned()) {
-            //    self.post.load(self.user.currentUser.id);
-            //} else {
-            //    self.post.load();
-            //}
+            if (uid.length > 0) {
+                self.user.getUser(uid);
+                self.post.load(uid);
+            } else {
+                self.post.load()
+            }
         });
     }
 
