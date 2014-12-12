@@ -1,6 +1,8 @@
 <?php
 define('__INCLUDE__', dirname(__FILE__));
 define('__ROOT__', dirname(__INCLUDE__));
+
+session_start();
 $config = [];
 /**
  *  Database configuration

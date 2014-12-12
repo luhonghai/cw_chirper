@@ -54,9 +54,8 @@ class User extends AbstractModel {
             if (mysqli_num_rows($result) > 0) {
                 $row = mysqli_fetch_assoc($result);
                 $user  = User::User($row['user_id'], $row['first_name'], $row['last_name'],
-                    $row['email'],$row['gender'], $row['username'], '', $row['country'],
+                    $row['email'],$row['gender'], $row['username'], $row['country'],
                     $row['bio'],$row['avatar']);
-                session_start();
                 $user->setAsCurrentUser();
                 return true;
             } else {
@@ -82,13 +81,16 @@ class User extends AbstractModel {
      * Set user as current login user
      */
     public function setAsCurrentUser() {
+        session_regenerate_id();
         $_SESSION['user'] = $this;
+        session_write_close();
     }
 
     /**
      * @return current login user
      */
     public static function currentUser() {
+        if (empty($_SESSION['user'])) return null;
         return $_SESSION['user'];
     }
 
@@ -96,6 +98,7 @@ class User extends AbstractModel {
      * @return bool Return true if user is loginned
      */
     public static function isLogin() {
+        if (empty($_SESSION['user'])) return false;
         return $_SESSION['user'] != null;
     }
 
@@ -117,7 +120,7 @@ class User extends AbstractModel {
                         '".mysqli_escape_string($conn, $this->first_name)."',
                         '".mysqli_escape_string($conn, $this->last_name)."',
                         '".mysqli_escape_string($conn, $this->email)."',
-                        ".mysqli_escape_string($conn, $this->gender).",
+                        ".($this->gender ? 1 : 0).",
                         '".mysqli_escape_string($conn, $this->username)."',
                         md5('".mysqli_escape_string($conn, $this->password)."'),
                         '".mysqli_escape_string($conn, $this->country)."',
@@ -130,7 +133,7 @@ class User extends AbstractModel {
                       first_name='".mysqli_escape_string($conn,$this->first_name)."',
                       last_name='".mysqli_escape_string($conn,$this->last_name)."',
                       email='".mysqli_escape_string($conn,$this->email)."',
-                      gender=".mysqli_escape_string($conn,$this->gender).",
+                      gender=".($this->gender ? 1 : 0).",
                       username='".mysqli_escape_string($conn,$this->username)."',
                       country='".mysqli_escape_string($conn,$this->country)."',
                       bio='".mysqli_escape_string($conn,$this->bio)."',

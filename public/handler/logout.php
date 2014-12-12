@@ -1,6 +1,7 @@
 <?php
 use Model\User;
 require_once('../include/config.php');
+require_once(__INCLUDE__.'/functions.php');
 require_once(__INCLUDE__ . '/model/User.php');
 
 User::logout();

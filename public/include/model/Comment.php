@@ -1,10 +1,11 @@
 <?php
 
 namespace Model;
-
+use Model\User;
 use Database\Connector;
 require_once(__INCLUDE__.'/database/Connector.php');
 require_once(__INCLUDE__.'/model/AbstractModel.php');
+require_once(__INCLUDE__.'/model/User.php');
 
 class Comment extends AbstractModel {
 
@@ -38,11 +39,13 @@ class Comment extends AbstractModel {
         $db = new Connector($GLOBALS['config']);
         $conn = $db->open();
         $result = null;
-        $sql = "select * from
+        $sql = "select c.comment_id, c.post_id, c.user_id, c.comment, c.image, c.created_date,
+                  u.first_name, u.last_name, u.email, u.gender, u.username, u.country, u.bio,
+                  u.avatar, c.`timestamp` from
                   ((comment as c inner join post as p on p.post_id = c.post_id)
                     inner join user as u on u.user_id = c.user_id)
                     where u.deleted = FALSE and p.deleted = FALSE and c.deleted = FALSE
-                    and c.comment_id = ?
+                    and c.comment_id = '".mysqli_escape_string($conn, $id)."'
                 ";
         try {
             $rs = mysqli_query($conn, $sql) or die("Could not find comment by id ".$id." ".mysqli_error($conn));
@@ -60,9 +63,40 @@ class Comment extends AbstractModel {
      * Find all models
      * @return mixed
      */
-    public function findAll()
+    public function findAll($post_id = false)
     {
-        // TODO: Implement findAll() method.
+        $db = new Connector($GLOBALS['config']);
+        $conn = $db->open();
+        $result = array();
+        if ($post_id) {
+            $sql = "select c.comment_id, c.post_id, c.user_id, c.comment, c.image, c.created_date,
+                  u.first_name, u.last_name, u.email, u.gender, u.username, u.country, u.bio,
+                  u.avatar, c.`timestamp` from
+                  ((comment as c inner join post as p on p.post_id = c.post_id)
+                    inner join user as u on u.user_id = c.user_id)
+                    where u.deleted = FALSE and p.deleted = FALSE and c.deleted = FALSE
+                    and c.post_id = '".mysqli_escape_string($conn, $post_id)."'
+                ";
+        } else {
+            $sql = "select c.comment_id, c.post_id, c.user_id, c.comment, c.image, c.created_date,
+                  u.first_name, u.last_name, u.email, u.gender, u.username, u.country, u.bio,
+                  u.avatar, c.`timestamp` from
+                  ((comment as c inner join post as p on p.post_id = c.post_id)
+                    inner join user as u on u.user_id = c.user_id)
+                    where u.deleted = FALSE and p.deleted = FALSE and c.deleted = FALSE
+                ";
+        }
+        try {
+            $rs = mysqli_query($conn, $sql) or die("Could not find all comments ".mysqli_error($conn));
+            if (mysqli_num_rows($rs) > 0) {
+                while($row = mysqli_fetch_assoc($rs)){
+                    array_push($result, Comment::rowToModel($row));
+                }
+            }
+        } catch (\Exception $e) {
+        }
+        $db->close();
+        return $result;
     }
 
     /**

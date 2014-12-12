@@ -1,10 +1,11 @@
 <?php
 
 namespace Model;
-
+use Model\User;
 use Database\Connector;
 require_once(__INCLUDE__.'/database/Connector.php');
 require_once(__INCLUDE__.'/model/AbstractModel.php');
+require_once(__INCLUDE__.'/model/User.php');
 
 class Post extends AbstractModel {
 
@@ -40,7 +41,7 @@ class Post extends AbstractModel {
         $db = new Connector($GLOBALS['config']);
         $conn = $db->open();
         $result = null;
-        $sql = "select p.song, p.artist,p.comment,p.user_id, p.post_id,
+        $sql = "select p.song, p.artist,p.comment,p.user_id, p.post_id,p.image,
                       u.first_name, u.last_name, u.email,u.gender,u.username, u.country,
                       u.bio, u.avatar,
                       p.`timestamp`, p.created_date
@@ -80,48 +81,26 @@ class Post extends AbstractModel {
      * Find all models
      * @return mixed
      */
-    public function findAll()
+    public function findAll($id = false)
     {
         $db = new Connector($GLOBALS['config']);
         $conn = $db->open();
         $result = array();
-        $sql = "select p.song, p.artist,p.comment,p.user_id, p.post_id,
+        $sql = "select p.song, p.artist,p.comment,p.user_id, p.post_id,p.image,
                       u.first_name, u.last_name, u.email,u.gender,u.username, u.country,
                       u.bio, u.avatar,
                       p.`timestamp`, p.created_date
                   from post as p inner join user as u on p.user_id = u.user_id
-                  where p.deleted = FALSE  and u.deleted = FALSE
+                  where p.deleted = FALSE  and u.deleted = FALSE order by p.created_date DESC
                 ";
+        if ($id) {
+            $sql .= " and u.user_id = '".mysqli_escape_string($conn, $id)."'";
+        }
         try {
             $rs = mysqli_query($conn, $sql) or die("Could not find all post ".mysqli_error($conn));
             if (mysqli_num_rows($rs) > 0) {
                 while($row = mysqli_fetch_assoc($rs)){
                    array_push($result, Post::rowToModel($row));
-                }
-            }
-        } catch (\Exception $e) {
-        }
-        $db->close();
-        return $result;
-    }
-
-    public function findAllByUserId($id) {
-        $db = new Connector($GLOBALS['config']);
-        $conn = $db->open();
-        $result = array();
-        $sql = "select p.song, p.artist,p.comment,p.user_id, p.post_id,
-                      u.first_name, u.last_name, u.email,u.gender,u.username, u.country,
-                      u.bio, u.avatar,
-                      p.`timestamp`, p.created_date
-                  from post as p inner join user as u on p.user_id = u.user_id
-                  where p.deleted = FALSE  and u.deleted = FALSE
-                  u.user_id = '".mysqli_escape_string($conn, $id)."'
-                ";
-        try {
-            $rs = mysqli_query($conn, $sql) or die("Could not find all post ".mysqli_error($conn));
-            if (mysqli_num_rows($rs) > 0) {
-                while($row = mysqli_fetch_assoc($rs)){
-                    array_push($result, Post::rowToModel($row));
                 }
             }
         } catch (\Exception $e) {

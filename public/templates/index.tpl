@@ -1,87 +1,48 @@
-{config_load file="test.conf" section="setup"}
-{include file="header.tpl" title=foo}
+{include file="header.tpl"}
+{include file="navigation.tpl"}
+<!--main-->
+<div class="container" id="main">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="main-message"></div>
+        </div>
+        <div class="col-md-12 post-stream center-block">
+            <div class="well stream-quick-sign-up" style="display: none">
+                    <h4>Sign-up now!</h4>
+                    <div class="input-group text-center">
+                        <input type="text" name="quick-signup-email" class="form-control input-lg" placeholder="Enter your email address">
+                        <span class="input-group-btn"><button class="btn btn-lg btn-primary quick-signup-button" type="button">OK</button></span>
+                    </div>
+            </div>
 
-<PRE>
+            <div class="well stream-quick-post" style="display: none">
+                <form class="form-horizontal" role="form">
+                    <h4>New review</h4>
+                    <div class="form-group post-form-item">
+                        <input type="text" name="song" class="form-control" placeholder="Song name"/>
+                    </div>
+                    <div class="form-group post-form-item">
+                        <input type="text" name="artist" class="form-control" placeholder="Artist name"/>
+                    </div>
+                    <div class="form-group post-form-item">
+                        <textarea class="form-control" name="comment" placeholder="Your comment"></textarea>
+                    </div>
+                    <button class="btn btn-success pull-right post-submit" type="button">Post</button>
+                    <ul class="list-inline">
+                        <li>
+                            <a href="#"><i class="glyphicon glyphicon-picture"></i></a>
+                        </li>
+                        <li>
+                            <a href="#" style="" ><i class="glyphicon glyphicon-map-marker"></i></a>
+                        </li>
 
-{* bold and title are read from the config file *}
-    {if #bold#}<b>{/if}
-        {* capitalize the first letters of each word of the title *}
-        Title: {#title#|capitalize}
-        {if #bold#}</b>{/if}
-
-    The current date and time is {$smarty.now|date_format:"%Y-%m-%d %H:%M:%S"}
-
-    The value of global assigned variable $SCRIPT_NAME is {$SCRIPT_NAME}
-
-    Example of accessing server environment variable SERVER_NAME: {$smarty.server.SERVER_NAME}
-
-    The value of {ldelim}$Name{rdelim} is <b>{$Name}</b>
-
-variable modifier example of {ldelim}$Name|upper{rdelim}
-
-<b>{$Name|upper}</b>
-
-
-An example of a section loop:
-
-    {section name=outer
-    loop=$FirstName}
-        {if $smarty.section.outer.index is odd by 2}
-            {$smarty.section.outer.rownum} . {$FirstName[outer]} {$LastName[outer]}
-        {else}
-            {$smarty.section.outer.rownum} * {$FirstName[outer]} {$LastName[outer]}
-        {/if}
-        {sectionelse}
-        none
-    {/section}
-
-    An example of section looped key values:
-
-    {section name=sec1 loop=$contacts}
-        phone: {$contacts[sec1].phone}
-        <br>
-
-            fax: {$contacts[sec1].fax}
-        <br>
-
-            cell: {$contacts[sec1].cell}
-        <br>
-    {/section}
-    <p>
-
-        testing strip tags
-        {strip}
-<table border=0>
-    <tr>
-        <td>
-            <A HREF="{$SCRIPT_NAME}">
-                <font color="red">This is a test </font>
-            </A>
-        </td>
-    </tr>
-</table>
-    {/strip}
-
-</PRE>
-
-This is an example of the html_select_date function:
-
-<form>
-    {html_select_date start_year=1998 end_year=2010}
-</form>
-
-This is an example of the html_select_time function:
-
-<form>
-    {html_select_time use_24_hours=false}
-</form>
-
-This is an example of the html_options function:
-
-<form>
-    <select name=states>
-        {html_options values=$option_values selected=$option_selected output=$option_output}
-    </select>
-</form>
-
+                    </ul>
+                </form>
+            </div>
+            <div class="post-anchor"></div>
+        </div>
+    </div>
+</div><!--/main-->
+{include file="jstemplate.tpl"}
+{include file="modal.tpl"}
 {include file="footer.tpl"}
