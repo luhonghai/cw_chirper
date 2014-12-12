@@ -27,6 +27,7 @@ class Comment extends AbstractModel {
         $instance->image = $image;
         $instance->timestamp = $timestamp;
         $instance->created_date = $created_date;
+        return $instance;
     }
 
     /**
@@ -51,7 +52,7 @@ class Comment extends AbstractModel {
             $rs = mysqli_query($conn, $sql) or die("Could not find comment by id ".$id." ".mysqli_error($conn));
             if (mysqli_num_rows($rs) > 0) {
                 $row = mysqli_fetch_assoc($rs);
-                $result = Post::rowToModel($row);
+                $result = Comment::rowToModel($row);
             }
         } catch (\Exception $e) {
         }
@@ -76,6 +77,7 @@ class Comment extends AbstractModel {
                     inner join user as u on u.user_id = c.user_id)
                     where u.deleted = FALSE and p.deleted = FALSE and c.deleted = FALSE
                     and c.post_id = '".mysqli_escape_string($conn, $post_id)."'
+                    order by c.created_date DESC
                 ";
         } else {
             $sql = "select c.comment_id, c.post_id, c.user_id, c.comment, c.image, c.created_date,
@@ -84,6 +86,7 @@ class Comment extends AbstractModel {
                   ((comment as c inner join post as p on p.post_id = c.post_id)
                     inner join user as u on u.user_id = c.user_id)
                     where u.deleted = FALSE and p.deleted = FALSE and c.deleted = FALSE
+                    order by c.created_date DESC
                 ";
         }
         try {

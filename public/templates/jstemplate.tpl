@@ -16,15 +16,13 @@
 
         </table>
         </div>
-        <form>
         <div class="input-group">
         <div class="input-group-btn">
         <button class="btn btn-default"><i class="glyphicon glyphicon-heart-empty"></i></button>
-        <button class="btn btn-default"><i class="glyphicon glyphicon-send"></i></button>
+        <button class="btn btn-default button-comment"><i class="glyphicon glyphicon-send"></i></button>
         </div>
-        <input type="text" pid="{{id}}" uid="{{user_id}}" class="form-control" placeholder="Add a comment..">
+        <input type="text" pid="{{id}}" uid="{{user_id}}" class="form-control input-comment" placeholder="Add a comment..">
         </div>
-        </form>
 
     </div>
     </div>

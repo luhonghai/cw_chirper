@@ -18,7 +18,7 @@ if ($type == 'save') {
 } else if ($type == 'list') {
     if (isset($_POST['pid'])) {
         $comment = new Comment();
-        return json_encode($comment->findAll(Utilities::get_post_data('pid'),0));
+        echo json_encode($comment->findAll(Utilities::get_post_data('pid'),0));
     } else {
         echo 'Missing parameter';
     }
